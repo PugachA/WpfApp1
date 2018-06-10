@@ -226,48 +226,10 @@ namespace WpfApp1
                 }
                 if (result == MessageBoxResult.Yes)
                 {
-                    TextRange doc = new TextRange(rchTxtBox.Document.ContentStart, rchTxtBox.Document.ContentEnd); //создаем контейнер для документа
-
-                    if (File_Name == "")
+                    Save_Click(sender, new RoutedEventArgs());
+                    if(flag_SaveCancel==true)
                     {
-                        SaveFileDialog sfd = new SaveFileDialog();
-                        sfd.Filter = "Text Files (*.txt)|*.txt|RichText Files (*.rtf)|*.rtf|XAML Files (*.xaml)|*.xaml|All files (*.*)|*.*"; //форматы сохранения файлов
-                        if (sfd.ShowDialog() == true)
-                        {
-                            using (FileStream fs = File.Create(sfd.FileName))
-                            {
-                                if (Path.GetExtension(sfd.FileName).ToLower() == ".rtf")
-                                {
-                                    doc.Save(fs, DataFormats.Rtf);
-                                    File_Format = DataFormats.Rtf;
-                                }
-                                else if (Path.GetExtension(sfd.FileName).ToLower() == ".txt")
-                                {
-                                    doc.Save(fs, DataFormats.Text);
-                                    File_Format = DataFormats.Text;
-                                }
-                                else
-                                {
-                                    doc.Save(fs, DataFormats.Xaml);
-                                    File_Format = DataFormats.Xaml;
-                                }
-                                File_Name = sfd.FileName;
-                                flag_change = false;
-                            }
-                        }
-                        else
-                        {
-                            e.Cancel = true; //предотвращаем закрытие приложения
-                        }
-                    }
-                    else
-                    {
-                        using (FileStream fs = File.Create(File_Name))
-                        {
-                            doc.Save(fs, File_Format);
-                            flag_change = false;
-                        }
-
+                        e.Cancel = true; //предотвращаем закрытие приложения
                     }
                 }
 
