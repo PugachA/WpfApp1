@@ -15,7 +15,7 @@
         <ToolBarTray Grid.Row="0">
             <ToolBar Height="40" VerticalAlignment="Top">
                 <Button x:Name="New" Click="New_Click" ToolTip="Создать">
-                    <Image Source="Image/new.png"/>
+                    <Image Source="Image/new.png"/> 
                 </Button>
                 <Button x:Name="Open" Click="Open_Click" ToolTip="Открыть">
                     <Image Source="Image/open.png"/>
@@ -25,9 +25,6 @@
                 </Button>
                 <Button x:Name="Save_As" Click="Save_As_Click" ToolTip="Сохранить как">
                     <Image Source="Image/save_as.png"/>
-                </Button>
-                <Button x:Name="SpellCheck" Click="SpellCheck_Click" ToolTip="Проверка орфографии">
-                    <Image Source="Image/Check.jpg"/>
                 </Button>
                 <Button x:Name="Print" ToolTip="Печать" Click="Print_Click">
                     <Image Source="Image/print.png"/>
@@ -57,6 +54,9 @@
                 <Button x:Name="Low"  ToolTip="Приведение к нижнему регистру" Click="Low_Click">
                     <Image Source="Image/Low.png"/>
                 </Button>
+                <CheckBox x:Name="SpellCheck" ToolTip="Проверка орфографии" Unchecked="SpellCheck_Unchecked" Checked="SpellCheck_Checked">
+                    <Image Source="Image/Check.jpg"/>
+                </CheckBox>
             </ToolBar>
         </ToolBarTray>
         <ScrollViewer Grid.Row="1">

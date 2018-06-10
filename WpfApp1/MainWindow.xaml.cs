@@ -27,7 +27,7 @@ namespace WpfApp1
         string File_Name = ""; //храним имя файла для сохранения
         string File_Format = ""; //храним формат файла для сохранения
         bool flag_change = false; //поднимается когда в файл вносятся изменения
-        bool flag_check = true; //флаг для проверки орфографии
+        bool flag_SaveCancel = false; //флаг для обработки нажатия отмены при сохранении
 
         public MainWindow()
         {
@@ -49,7 +49,10 @@ namespace WpfApp1
                 if (result == MessageBoxResult.Yes)
                 {
                     Save_Click(sender, e);
-                    Open_File(); //открываем файл
+                    if (flag_SaveCancel==false)
+                    {
+                        Open_File(); //открываем файл
+                    }
                 }
 
             }
@@ -91,7 +94,6 @@ namespace WpfApp1
             }
         }
 
-
         public void Save_Click(object sender, RoutedEventArgs e)
         {
             TextRange doc = new TextRange(rchTxtBox.Document.ContentStart, rchTxtBox.Document.ContentEnd); //создаем контейнер для документа
@@ -104,6 +106,7 @@ namespace WpfApp1
                 {
                     using (FileStream fs = File.Create(sfd.FileName))
                     {
+                        //if (sfd.DialogResult=false)
                         if (Path.GetExtension(sfd.FileName).ToLower() == ".rtf")
                         {
                             doc.Save(fs, DataFormats.Rtf);
@@ -121,7 +124,12 @@ namespace WpfApp1
                         }
                         File_Name = sfd.FileName;
                         flag_change = false;
+                        flag_SaveCancel = false;
                     }
+                }
+                else
+                {
+                    flag_SaveCancel = true;
                 }
             }
             else
@@ -134,6 +142,7 @@ namespace WpfApp1
                     
             }
         }
+
         private void RichTextBox_TextChanged(object sender, EventArgs e)
         {
             flag_change = true;
@@ -156,8 +165,11 @@ namespace WpfApp1
                 if (result == MessageBoxResult.Yes)
                 {
                     Save_Click(sender, e);
-                    rchTxtBox.Document.Blocks.Clear(); //очищаем richtextbox
-                    flag_change = false;
+                    if (flag_SaveCancel==false)
+                    {
+                        rchTxtBox.Document.Blocks.Clear(); //очищаем richtextbox
+                        flag_change = false;
+                    }
                 }
                    
             }
@@ -198,6 +210,7 @@ namespace WpfApp1
                 }
             }
         }
+
         void DataWindow_Closing(object sender, CancelEventArgs e) //обработка закрытия приложения
         {
             if (flag_change)
@@ -206,13 +219,10 @@ namespace WpfApp1
                                                       "Текстовый редактор",
                                                       MessageBoxButton.YesNoCancel,
                                                       MessageBoxImage.Question);
-                if (result == MessageBoxResult.No)
-                {
-                    Application.Current.Shutdown(); //закрываем приложение
-                }
+
                 if (result == MessageBoxResult.Cancel)
                 {
-                    e.Cancel = true; //закрываем окно сообщения
+                    e.Cancel = true; //предотвращаем закрытие приложения
                 }
                 if (result == MessageBoxResult.Yes)
                 {
@@ -243,8 +253,11 @@ namespace WpfApp1
                                 }
                                 File_Name = sfd.FileName;
                                 flag_change = false;
-                                Application.Current.Shutdown(); //закрываем приложение
                             }
+                        }
+                        else
+                        {
+                            e.Cancel = true; //предотвращаем закрытие приложения
                         }
                     }
                     else
@@ -254,51 +267,45 @@ namespace WpfApp1
                             doc.Save(fs, File_Format);
                             flag_change = false;
                         }
-                        Application.Current.Shutdown(); //закрываем приложение
 
                     }
                 }
 
             }
-            else
-            {
-                Application.Current.Shutdown(); //закрываем приложение
-            }
         }
+
         private void ColorBack_Checked(object sender, RoutedEventArgs e)
         {
-                rchTxtBox.Selection.ApplyPropertyValue(TextElement.BackgroundProperty, new SolidColorBrush(System.Windows.Media.Colors.Yellow));//изменение цвета фона на желтый
-            ColorBack.Background = Brushes.Yellow;
-            
+            rchTxtBox.Selection.ApplyPropertyValue(TextElement.BackgroundProperty, new SolidColorBrush(System.Windows.Media.Colors.Yellow));//изменение цвета фона на желтый
+            ColorBack.Background = Brushes.Yellow;   
         }
+
         private void ColorBack_Unchecked(object sender, RoutedEventArgs e)
         {
             rchTxtBox.Selection.ApplyPropertyValue(TextElement.BackgroundProperty, new SolidColorBrush(System.Windows.Media.Colors.White));//изменение цвета фона обратно на белый
             ColorBack.Background = Brushes.LightYellow;
         }
+
         private void ColorFore_Checked(object sender, RoutedEventArgs e)
         {
             rchTxtBox.Selection.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(System.Windows.Media.Colors.Red));//изменение цвета символов на красный
-
         }
+
         private void ColorFore_Unchecked(object sender, RoutedEventArgs e)
         {
             rchTxtBox.Selection.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(System.Windows.Media.Colors.Black));//изменение цвета символов обратно на черный
         }
-        private void SpellCheck_Click(object sender, RoutedEventArgs e)//проверка орфографии
+
+        private void SpellCheck_Checked(object sender, RoutedEventArgs e)
         {
-            if(flag_check)
-            {
-                rchTxtBox.SpellCheck.IsEnabled = true;//включение проверки орфографии
-                flag_check = !flag_check;
-            }
-            else
-            {
-                rchTxtBox.SpellCheck.IsEnabled = false;//выключение проверки орфографии
-                flag_check = !flag_check;
-            }
-            
+            rchTxtBox.SpellCheck.IsEnabled = true;//включение проверки орфографии
         }
+
+        private void SpellCheck_Unchecked(object sender, RoutedEventArgs e)
+        {
+            rchTxtBox.SpellCheck.IsEnabled = false;//выключение проверки орфографии
+        }
+
         private void Up_Click(object sender, RoutedEventArgs e)
         {
             rchTxtBox.Selection.Text = rchTxtBox.Selection.Text.ToUpper();//приведение к верхнему регистру
